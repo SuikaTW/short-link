@@ -5,8 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>短網址生成</title>
+    <style>
+        body {
+            background: #000; /* 固定深黑色背景 */
+            overflow: hidden; /* 防止滑鼠軌跡超出視窗 */
+        }
+        .trail {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fadeOut 1s forwards;
+        }
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-r from-blue-100 via-blue-200 to-blue-300 min-h-screen p-6">
+<body class="min-h-screen p-6" onmousemove="throttledUpdateBackground(event)">
     <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-xl">
         <h1 class="text-3xl font-extrabold text-center text-blue-600 mb-6">
             短網址生成器
@@ -14,24 +34,94 @@
         <div class="flex items-center space-x-2 mb-4">
             <input
               type="url"
-              id="name"
-              name="name"
+              id="urlInput"
               placeholder="https://example.com"
               required
               class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none 
               focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
               focus:shadow-md focus:bg-blue-50 placeholder-gray-400 transition duration-300"
             />
-            <button class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg 
-                           hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition duration-300">
+            <button
+              id="generateBtn"
+              class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg 
+                     hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition duration-300">
                 生成
             </button>
         </div>
 
-        <div class="bg-gray-50 p-6 rounded-lg shadow-md mt-6 border border-gray-200">
+        <div id="result" class="bg-gray-50 p-6 rounded-lg shadow-md mt-6 border border-gray-200 hidden">
             <h2 class="text-xl font-bold text-gray-800 mb-2">生成的短網址</h2>
-            <p class="text-gray-600">這裡會顯示生成的短網址。</p>
+            <p id="shortUrl" class="text-blue-600 font-semibold"></p>
         </div>
     </div>
+
+    <script>
+        let hue = 0; // 用於控制漸層顏色的變化
+        let lastExecutionTime = 0; // 用於節流
+
+        function throttledUpdateBackground(event) {
+            const now = Date.now();
+            if (now - lastExecutionTime < 50) return; // 限制每 50 毫秒執行一次
+            lastExecutionTime = now;
+
+            updateBackground(event);
+        }
+
+        function updateBackground(event) {
+            const { clientX, clientY } = event;
+
+            // 創建滑鼠軌跡
+            const trail = document.createElement('div');
+            trail.className = 'trail';
+            trail.style.left = `${clientX}px`;
+            trail.style.top = `${clientY}px`;
+
+            // 使用 HSL 顏色模型生成漸層顏色
+            trail.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+            hue = (hue + 10) % 360; // 每次增加 10 度，循環變化
+
+            document.body.appendChild(trail);
+
+            // 移除軌跡
+            setTimeout(() => {
+                trail.remove();
+            }, 1000);
+        }
+
+        const generateBtn = document.getElementById('generateBtn');
+        const urlInput = document.getElementById('urlInput');
+        const resultDiv = document.getElementById('result');
+        const shortUrlP = document.getElementById('shortUrl');
+
+        generateBtn.addEventListener('click', async () => {
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                alert('請輸入有效的 URL');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/shorten', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate short URL');
+                }
+
+                const data = await response.json();
+                shortUrlP.textContent = data.shortUrl;
+                resultDiv.classList.remove('hidden');
+            } catch (error) {
+                alert('發生錯誤，請稍後再試');
+                console.error(error);
+            }
+        });
+    </script>
 </body>
 </html>
