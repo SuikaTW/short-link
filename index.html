@@ -4,11 +4,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>短網址生成</title>
 </head>
-<body class="bg-gray-50 p-4">
-    <div class="max-w-md mx-auto">
-        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">短網址生成</h1>
+<body class="bg-gradient-to-r from-blue-100 via-blue-200 to-blue-300 min-h-screen p-6">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-xl">
+        <h1 class="text-3xl font-extrabold text-center text-blue-600 mb-6">
+            短網址生成器
+        </h1>
         <div class="flex items-center space-x-2 mb-4">
             <input
               type="url"
@@ -16,16 +18,19 @@
               name="name"
               placeholder="https://example.com"
               required
-              class="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:shadow-lg focus:bg-gray-50 placeholder-gray-400"
+              class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none 
+              focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+              focus:shadow-md focus:bg-blue-50 placeholder-gray-400 transition duration-300"
             />
-            <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                按鈕
+            <button class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg 
+                           hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition duration-300">
+                生成
             </button>
         </div>
 
-        <div class="bg-gray-100 p-6 rounded shadow-md mt-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-gray-200">
-            <h2 class="text-xl font-bold text-gray-800">Hello!</h2>
-            <p class="text-gray-600">這是一個簡單的short link網頁。</p>
+        <div class="bg-gray-50 p-6 rounded-lg shadow-md mt-6 border border-gray-200">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">生成的短網址</h2>
+            <p class="text-gray-600">這裡會顯示生成的短網址。</p>
         </div>
     </div>
 </body>
